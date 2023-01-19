@@ -3,10 +3,6 @@
 echo "Installing Transformers..."
 pip -q install transformers[onnx]
 
-echo "Downloading xdistillbert model from HuggingFace..."
-echo "Exporting model to Torchscript..."
-python pt_exporter.py
-
 echo "Exporting model to ONNX..."
 python -m transformers.onnx --model=bergum/xtremedistil-emotion \
                             --feature=sequence-classification /workspace/onnx/
@@ -19,6 +15,6 @@ trtexec --onnx=/workspace/onnx/model.onnx \
         --maxShapes=input_ids:224x128,attention_mask:224x128,token_type_ids:224x128 \
         --fp16 \
         --verbose \
-        --workspace=14000 | tee conversion_trt.txt
+        --memPoolSize=workspace:22000 | tee conversion_trt.txt
 
 echo "Finished exporting all models..."
