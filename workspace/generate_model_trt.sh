@@ -7,6 +7,8 @@ echo "Exporting model to ONNX..."
 python -m transformers.onnx --model=bergum/xtremedistil-emotion \
                             --feature=sequence-classification /workspace/onnx/
 
+# use CUDA LAZY LOADING
+export CUDA_MODULE_LOADING=LAZY
 echo "Converting ONNX Model to TensorRT FP16 Plan..."
 trtexec --onnx=/workspace/onnx/model.onnx \
         --saveEngine=/workspace/model.plan \
@@ -15,6 +17,6 @@ trtexec --onnx=/workspace/onnx/model.onnx \
         --maxShapes=input_ids:224x128,attention_mask:224x128,token_type_ids:224x128 \
         --fp16 \
         --verbose \
-        --memPoolSize=workspace:22000 | tee conversion_trt.txt
+        --memPoolSize=workspace:14000 | tee conversion_trt.txt
 
 echo "Finished exporting all models..."
